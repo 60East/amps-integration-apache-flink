@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<AMPSConfig>
+
+    <Name>AMPS-2</Name>
+    <Group>ReplicationExample</Group>
+
+    <Transports>
+        <Transport>
+            <Name>any-tcp</Name>
+            <Type>tcp</Type>
+            <InetAddr>9010</InetAddr>
+            <Protocol>amps</Protocol>
+        </Transport>
+
+        <Transport>
+            <Name>any-ws</Name>
+            <Type>tcp</Type>
+            <InetAddr>9011</InetAddr>
+            <Protocol>websocket</Protocol>
+        </Transport>
+
+        <Transport>
+            <Name>amps-replication</Name>
+            <Type>amps-replication</Type>
+            <InetAddr>localhost:10005</InetAddr>
+        </Transport>
+    </Transports>
+
+    <Replication>
+        <Destination>
+            <Topic>
+                <MessageType>json</MessageType>
+                <Name>initial-publish</Name>
+            </Topic>
+            <Topic>
+                <MessageType>json</MessageType>
+                <Name>with-ts</Name>
+            </Topic>
+            <Topic>
+                <MessageType>json</MessageType>
+                <Name>work</Name>
+            </Topic>
+            <Topic>
+                <MessageType>json</MessageType>
+                <Name>work-to-do</Name>
+            </Topic>
+            <Topic>
+                <MessageType>json</MessageType>
+                <Name>checkpoint-failover</Name>
+            </Topic>
+            <Name>AMPS-1</Name>
+            <PassThrough>.*</PassThrough>
+            <Group>ReplicationExample</Group>
+            <SyncType>sync</SyncType>
+            <Transport>
+                <InetAddr>localhost:10004</InetAddr>
+                <Type>amps-replication</Type>
+            </Transport>
+        </Destination>
+    </Replication>
+
+    <Admin>
+        <InetAddr>8087</InetAddr>
+        <SQLTransport>any-ws</SQLTransport>
+        <FileName>./amps-files/amps-2/stats.db</FileName>
+        <WWWAuthenticate>Basic realm="AMPS Admin"</WWWAuthenticate>
+        <ExternalInetAddr>10.0.2.108:8087</ExternalInetAddr>
+    </Admin>
+
+    <Logging>
+        <Target>
+            <Protocol>stdout</Protocol>
+            <Level>warning</Level>
+            <IncludeErrors>00-0015</IncludeErrors>
+        </Target>
+        
+        <Target>
+            <Protocol>file</Protocol>
+            <Level>info</Level>
+            <FileName>./amps-files/amps-2/logs/amps_2.log</FileName>
+            <RotationThreshold>10MB</RotationThreshold>
+        </Target>
+    </Logging>
+  
+    <TransactionLog>
+	    <JournalDirectory>./amps-files/amps-2/journals</JournalDirectory>
+        <JournalSize>1GB</JournalSize>
+
+        <Topic>
+            <Name>initial-publish</Name>
+            <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+            <Name>with-ts</Name>
+            <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+            <MessageType>json</MessageType>
+            <Name>work</Name>
+        </Topic>
+        <Topic>
+            <MessageType>json</MessageType>
+            <Name>work-to-do</Name>
+        </Topic>
+        <Topic>
+            <MessageType>json</MessageType>
+            <Name>checkpoint-failover</Name>
+        </Topic>
+    </TransactionLog>
+
+    <SOW>
+        <Queue>
+            <Name>work-to-do</Name>
+            <MessageType>json</MessageType>
+            <Semantics>at-most-once</Semantics>
+            <UnderlyingTopic>work</UnderlyingTopic>
+            <MaxBacklog>50000</MaxBacklog>
+            <MaxPerSubscriptionBacklog>10000</MaxPerSubscriptionBacklog>
+        </Queue>
+    </SOW>
+
+    <Actions>
+        <Action>
+            <On>
+                <Module>amps-action-on-startup</Module>
+            </On>
+            <Do>
+                <Module>amps-action-do-remove-journal</Module>
+                <Options>
+                    <Age>1d</Age>
+                </Options>
+            </Do>
+        </Action>
+        
+        <Action>
+            <On>
+                <Module>amps-action-on-schedule</Module>
+                <Options>
+	                <Name>Periodic file system disk usage check</Name>
+                    <Every>10s</Every>
+                </Options>
+            </On>
+            <If>
+                <Module>amps-action-if-file-system-usage</Module>
+                <Options>
+                    <Path>./</Path>
+                    <GreaterThan>95%</GreaterThan>
+                </Options>
+            </If>
+            <Do>
+                <Module>amps-action-do-echo-message</Module>
+                <Options>
+                    <Message>CRITICAL: Shutting down AMPS due to lack of disk space</Message>
+                </Options>
+            </Do>
+            <Do>
+                <Module>amps-action-do-shutdown</Module>
+            </Do>
+        </Action>
+    </Actions>
+</AMPSConfig>

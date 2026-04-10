@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<AMPSConfig>
+
+    <Name>AMPS-Flink</Name>
+
+    <Transports>
+        <Transport>
+            <Name>any-tcp</Name>
+            <Type>tcp</Type>
+            <InetAddr>9006</InetAddr>
+            <Protocol>amps</Protocol>
+        </Transport>
+        <Transport>
+            <Name>any-ws</Name>
+            <Type>tcp</Type>
+            <InetAddr>9007</InetAddr>
+            <Protocol>websocket</Protocol>
+        </Transport>
+        <Transport>
+            <Name>any-tcps</Name>
+            <Type>tcps</Type>
+            <InetAddr>9020</InetAddr>
+            <Protocol>amps</Protocol>
+            <Certificate>./flink-connector-amps-examples/src/main/resources/ssl/cert.pem</Certificate>
+            <PrivateKey>./flink-connector-amps-examples/src/main/resources/ssl/key.pem</PrivateKey>
+            <SecureSocketProtocols>TLSv1.2 TLSv1.3</SecureSocketProtocols>
+        </Transport>
+    </Transports>
+
+    <Admin>
+        <InetAddr>8085</InetAddr>
+        <SQLTransport>any-ws</SQLTransport>
+        <FileName>./amps-files/amps-flink/stats.db</FileName>
+        <WWWAuthenticate>Basic realm="AMPS Admin"</WWWAuthenticate>
+    </Admin>
+
+    <Logging>
+        <Target>
+            <Protocol>stdout</Protocol>
+            <Level>warning</Level>
+            <IncludeErrors>00-0015</IncludeErrors>
+        </Target>
+
+        <Target>
+            <Protocol>file</Protocol>
+            <Level>info</Level>
+	        <FileName>./amps-files/amps-flink/logs/amps.log</FileName>
+            <RotationThreshold>10MB</RotationThreshold>
+        </Target>
+    </Logging>
+  
+    <TransactionLog>
+	    <JournalDirectory>./amps-files/amps-flink/journals</JournalDirectory>
+        <JournalSize>1GB</JournalSize>
+
+        <Topic>
+	        <Name>txlog_inc</Name>
+	        <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+            <Name>txlog_from_amps</Name>
+            <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+            <Name>txlog_from_flink</Name>
+            <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+            <Name>txlog_checkpointing</Name>
+            <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+	        <Name>Work</Name>
+	        <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+	        <Name>WorkToDo</Name>
+	        <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+	        <Name>MyData</Name>
+	        <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+	        <Name>MyDataToProcess</Name>
+	        <MessageType>json</MessageType>
+        </Topic>
+        <Topic>
+	        <Name>FailedMyData</Name>
+	        <MessageType>json</MessageType>
+        </Topic>
+    </TransactionLog>
+
+    <Actions>
+        <Action>
+            <On>
+                <Module>amps-action-on-startup</Module>
+            </On>
+            <Do>
+                <Module>amps-action-do-remove-journal</Module>
+                <Options>
+                    <Age>7d</Age>
+                </Options>
+            </Do>
+        </Action>
+        <Action>
+            <On>
+                <Module>amps-action-on-schedule</Module>
+                <Options>
+	                <Name>Periodic file system disk usage check</Name>
+                    <Every>1m</Every>
+                </Options>
+            </On>
+            <If>
+                <Module>amps-action-if-file-system-usage</Module>
+                <Options>
+                    <Path>./</Path>
+                    <GreaterThan>95%</GreaterThan>
+                </Options>
+            </If>
+            <Do>
+                <Module>amps-action-do-echo-message</Module>
+                <Options>
+                    <Message>CRITICAL: Shutting down AMPS due to lack of disk space</Message>
+                </Options>
+            </Do>
+            <Do>
+                <Module>amps-action-do-shutdown</Module>
+            </Do>
+        </Action>
+    </Actions>
+  
+    <SOW>
+	    <Queue>
+	        <Name>WorkToDo</Name>
+	        <MessageType>json</MessageType>
+	        <Semantics>at-most-once</Semantics>
+	        <UnderlyingTopic>Work</UnderlyingTopic>
+	        <MaxBacklog>50000</MaxBacklog>
+	        <MaxPerSubscriptionBacklog>50000</MaxPerSubscriptionBacklog>
+	    </Queue>
+	    <Queue>
+	        <Name>MyDataToProcess</Name>
+	        <MessageType>json</MessageType>
+	        <Semantics>at-least-once</Semantics>
+	        <UnderlyingTopic>MyData</UnderlyingTopic>
+	        <MaxBacklog>50000</MaxBacklog>
+	        <MaxPerSubscriptionBacklog>50000</MaxPerSubscriptionBacklog>
+	        <LeasePeriod>30s</LeasePeriod>
+	        <Expiration>1h</Expiration>
+	        <MaxDeliveries>3</MaxDeliveries>
+	        <MaxCancels>2</MaxCancels>
+	        <FairnessModel>fast</FairnessModel>
+	    </Queue>
+	    <Queue>
+	        <Name>FailedMyData</Name>
+	        <Semantics>at-least-once</Semantics>
+	        <MessageType>json</MessageType>
+	    </Queue>
+        
+        <Topic>
+	        <Name>sow_message</Name>
+	        <MessageType>json</MessageType>
+	        <FileName>./amps-files/amps-flink/sow/%n.sow</FileName>
+	        <Key>/from</Key>
+        </Topic>
+        <Topic>
+            <Name>market_data</Name>
+            <MessageType>json</MessageType>
+            <FileName>./amps-files/amps-flink/sow/%n.sow</FileName>
+            <Key>/symbol</Key> 
+        </Topic>
+   
+        <View>
+            <Name>agg_market_data</Name>
+            <MessageType>json</MessageType>
+            <UnderlyingTopic>market_data</UnderlyingTopic>
+
+            <Projection>
+                <Field>SUM(/ask) AS /ask_total</Field>
+                <Field>SUM(/bid) AS /bid_total</Field> 
+                <Field>COUNT(/symbol) AS /count</Field>
+                <Field>/group</Field>
+            </Projection>
+
+            <Grouping>
+                <Field>/group</Field>
+            </Grouping>
+        </View>
+    </SOW>
+ </AMPSConfig>

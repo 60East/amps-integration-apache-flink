@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <parent>
+        <groupId>org.apache.flink</groupId>
+        <artifactId>flink-connector-parent</artifactId>
+        <version>2.0.0</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.crankuptheamps.flink</groupId>
+    <artifactId>flink-connector-amps-parent</artifactId>
+    <version>1.2.0-2.2</version>
+    
+    <name>Flink : Connectors : AMPS : Parent</name>
+    <packaging>pom</packaging>
+    <inceptionYear>2026</inceptionYear>
+    <description>AMPS Flink connector by 60East Technologies, Inc.</description>
+    
+    <organization>
+        <name>60East Technologies, Inc.</name>
+        <url>https://crankuptheamps.com</url>
+    </organization>
+    
+    <developers>
+        <developer>
+            <organization>60East Technologies, Inc.</organization>
+            <organizationUrl>https://crankuptheamps.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <url>https://crankuptheamps.com/docs/amps-integrations/flink/intro</url>
+    
+    <scm>
+        <connection>scm:git:https://github.com/60East/amps-integration-apache-flink.git</connection>
+        <developerConnection>scm:git:git@github.com:60East/amps-integration-apache-flink.git</developerConnection>
+        <url>https://github.com/60East/amps-integration-apache-flink</url>
+    </scm>
+
+    <modules>
+        <module>flink-connector-amps</module>
+        <module>flink-connector-amps-examples</module>
+    </modules>
+
+    <properties>
+        <!-- Dependency Versions -->
+        <amps.client.version>5.3.5.0</amps.client.version>
+        <java.version>17</java.version>
+        <flink.major.minor>2.2</flink.major.minor>
+        <flink.patch>0</flink.patch>
+        <slfj4.version>2.0.17</slfj4.version>
+        <slfj4.simple.version>2.0.9</slfj4.simple.version>
+        <junit.version>6.0.3</junit.version>
+
+        <!-- Flink Connector Parent Properties -->
+        <flink.forkCountUnitTest>1</flink.forkCountUnitTest>
+        <flink.forkCountITCase>1</flink.forkCountITCase>
+        <flink.version>${flink.major.minor}.${flink.patch}</flink.version>
+        <flink.parent.artifactId>flink-connector-amps-parent</flink.parent.artifactId>
+        <japicmp.referenceVersion/> <!-- The old version for the binary compatibility checker japicmp-maven-plugin -->
+        <japicmp.skip>true</japicmp.skip>
+
+        <!-- Maven Plugin Versions -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.jacoco.version>0.8.14</maven.jacoco.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+
+        <!-- Command Line Arguments -->
+        <failIfNoTests>false</failIfNoTests>
+        <skipJavadocs>true</skipJavadocs>
+        <skipTests>true</skipTests>
+        <testLoggingLevel>DEBUG</testLoggingLevel>
+        <rerunFailingTestsCount>0</rerunFailingTestsCount>
+        <mainClass>SimpleExample</mainClass>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- AMPS Client -->
+            <dependency>
+                <groupId>com.crankuptheamps</groupId>
+                <artifactId>amps-client</artifactId>
+                <version>${amps.client.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slfj4.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>${slfj4.simple.version}</version>
+            </dependency>
+
+            <!-- Flink --> 
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-streaming-java</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-connector-base</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-json</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-test-utils</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-clients</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-table-planner-loader</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-table-api-java-bridge</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+           
+            <!-- JUnit -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>shade</goal>
+                            </goals>
+                            <configuration>
+                                <filters>
+                                    <filter>
+                                        <artifact>*:*</artifact>
+                                        <excludes>
+                                            <exclude>META-INF/MANIFEST.MF</exclude>
+                                            <exclude>META-INF/DEPENDENCIES</exclude>
+                                            <exclude>META-INF/LICENSE</exclude>
+                                        </excludes>
+                                    </filter>
+                                </filters>
+                                <transformers>
+                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                        <mainClass>com.crankuptheamps.flink.example.${mainClass}</mainClass>
+                                    </transformer>
+                                </transformers>
+                                <createDependencyReducedPom>false</createDependencyReducedPom>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <skipTests>${skipTests}</skipTests>
+                        <failIfNoSpecifiedTests>${failIfNoTests}</failIfNoSpecifiedTests>
+                        <rerunFailingTestsCount>${rerunFailingTestsCount}</rerunFailingTestsCount>
+                        <systemPropertyVariables>
+                            <org.slf4j.simpleLogger.defaultLogLevel>${testLoggingLevel}</org.slf4j.simpleLogger.defaultLogLevel>
+                        </systemPropertyVariables>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <configuration>
+                                <argLine>@{argLine} ${flink.surefire.baseArgLine} -Xmx${flink.XmxUnitTest}</argLine>
+                                <systemPropertyVariables>
+                                    <org.slf4j.simpleLogger.logFile>
+                                        ${project.build.directory}/logs-surefire.txt
+                                    </org.slf4j.simpleLogger.logFile>
+                                </systemPropertyVariables>  
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <showWarnings>true</showWarnings>
+                        <compilerArgs>
+                            <arg>-Xlint:unchecked</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <doclint>none</doclint>
+                        <links>
+                            <link>https://javadoc.io/static/com.crankuptheamps/amps-client/${amps.client.version}/</link>
+                            <link>https://nightlies.apache.org/flink/flink-docs-release-${flink.major.minor}/api/java/</link>
+                        </links>
+                        <skip>${skipJavadocs}</skip>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <configuration>
+                        <licenses>
+                            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                                <licenseFamilyCategory>60East</licenseFamilyCategory>
+                                <licenseFamilyName>60East Technologies Inc. License</licenseFamilyName>
+                                <patterns>
+                                    <pattern>60East Technologies Inc., All Rights Reserved.</pattern>
+                                </patterns>
+                            </license>
+                        </licenses>
+                        <licenseFamilies>
+                            <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+                                <familyName>60East Technologies Inc. License</familyName>
+                            </licenseFamily>
+                        </licenseFamilies>
+                        <excludes>
+                            <exclude>**/*.md</exclude>
+                            <exclude>**/*.xml</exclude>
+                            <exclude>**/target/**</exclude>
+                            <exclude>**/amps-files/**</exclude>
+                            <exclude>**/amps-configs/**</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${maven.jacoco.version}</version>
+                    <executions>
+                        <execution>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                            <configuration>
+                                <useAgent>true</useAgent>
+                                <keyname>${gpg.keyname}</keyname>
+                                <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                <gpgArguments>
+                                    <arg>--batch</arg>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
