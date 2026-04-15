@@ -25,13 +25,21 @@ under the License.
     <parent>
         <groupId>com.crankuptheamps.flink</groupId>
         <artifactId>flink-connector-amps-parent</artifactId>
-        <version>1.2.0-2.2</version>
+        <version>1.2.1-2.2</version>
     </parent>
 
     <artifactId>flink-connector-amps-examples</artifactId>
-    <name>Flink : Connectors : AMPS : Examples</name>
     
+    <name>Flink : Connectors : AMPS : Examples</name>
     <packaging>jar</packaging>
+    
+    <url>https://crankuptheamps.com/docs/amps-integrations/flink/intro</url>
+    
+    <scm>
+        <connection>scm:git:https://github.com/60East/amps-integration-apache-flink.git</connection>
+        <developerConnection>scm:git:git@github.com:60East/amps-integration-apache-flink.git</developerConnection>
+        <url>https://github.com/60East/amps-integration-apache-flink</url>
+    </scm>
 
     <dependencies>
 
