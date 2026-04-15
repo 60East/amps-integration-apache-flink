@@ -31,7 +31,7 @@ under the License.
 
     <groupId>com.crankuptheamps.flink</groupId>
     <artifactId>flink-connector-amps-parent</artifactId>
-    <version>1.2.0-2.2</version>
+    <version>1.2.1-2.2</version>
     
     <name>Flink : Connectors : AMPS : Parent</name>
     <packaging>pom</packaging>
@@ -86,6 +86,7 @@ under the License.
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.jacoco.version>0.8.14</maven.jacoco.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
 
         <!-- Command Line Arguments -->
         <failIfNoTests>false</failIfNoTests>
@@ -179,6 +180,10 @@ under the License.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
             </plugin>
         </plugins>
 
@@ -357,6 +362,22 @@ under the License.
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <extensions>true</extensions>
+                    <version>${central-publishing-maven-plugin.version}</version>
+                    <configuration>
+                        <autoPublish>false</autoPublish>
+                        <checksums>required</checksums>
+                        <skipPublishing>true</skipPublishing>
+                        <outputFilename>maven-upload-bundle-flink-${project.version}.zip</outputFilename>
+                        <excludeArtifacts>
+                            <artifact>flink-connector-amps-examples</artifact>
+                        </excludeArtifacts>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
