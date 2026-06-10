@@ -1116,6 +1116,39 @@ public class AMPSStatefulSinkWriterTest {
         
         @Test
         @Timeout(value = TestConstants.SHORT_TIMEOUT, unit = TimeUnit.SECONDS)
+        public void testSetTopicInSerializationSchema() throws Exception {
+            String topic = "testSetTopicInSerializationSchema";
+            String topicInSchema = topic + "-serializedElement";
+
+            AMPSSink<String> sink = AMPSSink.<String>builder()
+                .setUri(TestConstants.URI)
+                .setTopic(topic)
+                .setClientName(topic)
+                .setSerializationSchema(new MessageSerializationSchema<>(topicInSchema))
+                .build();
+            
+            try (Client sub = new Client(topic + "-sub");
+                    SinkWriter<String> writer = sink.createWriter(new AMPSWriterInitContext());) {
+                sub.connect(TestConstants.URI);
+                sub.logon();
+                
+                AMPSMessageHandler mhBuilder = new AMPSMessageHandler();
+                AMPSMessageHandler mhSchema = new AMPSMessageHandler();
+                sub.subscribe(mhBuilder, topic, 0);
+                sub.subscribe(mhSchema, topicInSchema, 0);
+    
+                writer.write("1", new WriterContext());
+                writer.flush(false);
+
+                assertNotNull(mhSchema.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should not have polled null message from topic set by Schema.");
+                assertNull(mhBuilder.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS / 5, TimeUnit.MILLISECONDS),
+                    "Should have polled null message from builder method topic.");
+            }
+        }
+        
+        @Test
+        @Timeout(value = TestConstants.SHORT_TIMEOUT, unit = TimeUnit.SECONDS)
         public void testSetCorrelationIdInSerializationSchema() throws Exception {
             String topic = "testSetCorrelationIdInSerializationSchema";
 

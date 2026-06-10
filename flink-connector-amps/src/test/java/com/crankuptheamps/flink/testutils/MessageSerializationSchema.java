@@ -34,11 +34,21 @@ import org.apache.flink.api.connector.sink2.SinkWriter;
 public class MessageSerializationSchema<T> implements AMPSSerializationSchema<T> {
     
     private final SimpleStringSchema serializationSchema = TestConstants.getStringSchema();
+    private final String topic;
+
+    public MessageSerializationSchema() {
+        this.topic = null;
+    }
+    
+    public MessageSerializationSchema(String topic) {
+        this.topic = topic;
+    }
 
     @Override
     public SerializedElement serialize(T element, SinkWriter.Context context) {
         SerializedElement se = new SerializedElement(serializationSchema.serialize(element.toString()));
         se.setCorrelationId("" + se.getData().length);
+        se.setTopic(topic);    
         return se;
     }
 }
