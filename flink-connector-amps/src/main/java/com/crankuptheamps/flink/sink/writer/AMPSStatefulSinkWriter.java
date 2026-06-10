@@ -473,8 +473,12 @@ public class AMPSStatefulSinkWriter<IN> implements StatefulSinkWriter<IN, AMPSWr
     protected void sendMessage(SerializedElement message) throws IOException {
         try {
             command.reset(commandType);
-    
-            command.setTopic(topicBytes, 0, topicBytes.length);
+
+            if (!message.isTopicNull()) {
+                command.setTopic(message.getTopic());
+            } else {
+                command.setTopic(topicBytes, 0, topicBytes.length);
+            }
 
             if (!message.isDataNull()) {
                 byte[] data = message.getData();

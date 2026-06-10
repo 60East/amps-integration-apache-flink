@@ -40,6 +40,8 @@ public class SerializedElement {
     private String correlationId;
     /** The SOW Key, if any, that will be used when publishing to AMPS. */
     private String sowKey;
+    /** The topic, if any, that will be used when publishing to AMPS. If null, use topic set by setTopic in the AMPSSink builder. */
+    private String topic;
 
     public SerializedElement() {}
 
@@ -138,6 +140,37 @@ public class SerializedElement {
      */
     public boolean isSowKeyNull() {
         return sowKey == null;
+    }
+    
+    /**
+     * Returns the topic used for publishing the SerializedElement's data.
+     *
+     * Used internally to set the topic.
+     *
+     * @return The topic.
+     */
+    public String getTopic() {
+        return topic;
+    }
+
+    /**
+     * Sets the topic used for publishing the SerializedElement's data.
+     *
+     * @param topic The topic.
+     */
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    /**
+     * Returns if the topic is null.
+     *
+     * Used internally to determine if the topic should be set using the SerializedElement's topic.
+     *
+     * @return If the topic is null.
+     */
+    public boolean isTopicNull() {
+        return topic == null;
     }
 }
 

@@ -274,7 +274,7 @@ The following are required to construct a valid AMPSSink:
 - `.setSerializationSchema(SerializationSchema)` or `.setSerializationSchema(AMPSSerializationSchema)`
     - Sets the serializer that clients will use to serialize data to AMPS.
     - When using a **SerializationSchema**, only the schema will be used to serialize the input elements.
-    - When using an **AMPSSerializationSchema**, more control over element serialization is provided such as specifying a correlation ID for each message published to AMPS.
+    - When using an **AMPSSerializationSchema**, more control over element serialization is provided such as specifying a correlation ID for each message published to AMPS and selecting a topic based on the input element.
 
 - `.build()`
     - Returns the constructed AMPSSink.
