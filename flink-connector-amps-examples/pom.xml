@@ -25,7 +25,7 @@ under the License.
     <parent>
         <groupId>com.crankuptheamps.flink</groupId>
         <artifactId>flink-connector-amps-parent</artifactId>
-        <version>1.2.1-2.2</version>
+        <version>1.2.2-2.2</version>
     </parent>
 
     <artifactId>flink-connector-amps-examples</artifactId>

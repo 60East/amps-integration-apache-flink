@@ -31,7 +31,7 @@ under the License.
 
     <groupId>com.crankuptheamps.flink</groupId>
     <artifactId>flink-connector-amps-parent</artifactId>
-    <version>1.2.1-2.2</version>
+    <version>1.2.2-2.2</version>
     
     <name>Flink : Connectors : AMPS : Parent</name>
     <packaging>pom</packaging>
@@ -65,7 +65,7 @@ under the License.
 
     <properties>
         <!-- Dependency Versions -->
-        <amps.client.version>5.3.5.0</amps.client.version>
+        <amps.client.version>5.3.5.1</amps.client.version>
         <java.version>17</java.version>
         <flink.major.minor>2.2</flink.major.minor>
         <flink.patch>0</flink.patch>
