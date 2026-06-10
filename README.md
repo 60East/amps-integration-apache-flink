@@ -147,6 +147,7 @@ The following list summarizes the jobs:
 - Flink aggregation with the AMPS connectors
 - Deserialization and header key usage with an AMPSDeserializationSchema
 - Serialization and correlation ID usage with an AMPSSerializationSchema
+- Selecting a topic to publish to with an AMPSSerializationSchema
 - Using SSL with the AMPS connectors
 
 <br>
