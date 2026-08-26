@@ -2419,11 +2419,6 @@ public class AMPSSourceReaderTest {
             
             try (Client pub = new Client(topic + "-pub");
                     AMPSSourceReader<String> reader = (AMPSSourceReader<String>) source.createReader(new AMPSSourceReaderContext());) {
-                reader.start();
-                reader.addSplits(splits);
-                
-                AMPSRecordEmitter<String> emitter = reader.getRecordEmitter();
-
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
@@ -2431,6 +2426,11 @@ public class AMPSSourceReaderTest {
                 pub.publish(topic, "{\"id\":2,\"data\":\"" + data + "\"}");
                 pub.publish(topic, "{\"id\":3,\"data\":\"" + data + "\"}");
                 pub.publishFlush(10000L);
+
+                reader.start();
+                reader.addSplits(splits);
+                
+                AMPSRecordEmitter<String> emitter = reader.getRecordEmitter();
 
                 // Simulate checkpoint ID 1, which is not snapshotted/discarded explicitly by the reader
                 waitForSpecifiedInput(reader, output, 1);
@@ -2476,11 +2476,6 @@ public class AMPSSourceReaderTest {
 
             try (Client pub = new Client(pubTopic + "-pub");
                     AMPSSourceReader<String> reader = (AMPSSourceReader<String>) source.createReader(new AMPSSourceReaderContext());) {
-                reader.start();
-                reader.addSplits(splits);
-                
-                AMPSRecordEmitter<String> emitter = reader.getRecordEmitter();
-                
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
@@ -2489,6 +2484,11 @@ public class AMPSSourceReaderTest {
                 pub.publish(pubTopic, "3");
                 pub.publish(pubTopic, "4");
                 pub.publishFlush(10000L);
+
+                reader.start();
+                reader.addSplits(splits);
+                
+                AMPSRecordEmitter<String> emitter = reader.getRecordEmitter();
                 
                 // Simulate checkpoint ID 1, which is not snapshotted/discarded explicitly by the reader
                 waitForSpecifiedInput(reader, output, 1);
