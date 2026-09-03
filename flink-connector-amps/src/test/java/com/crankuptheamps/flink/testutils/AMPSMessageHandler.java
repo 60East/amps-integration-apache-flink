@@ -53,7 +53,6 @@ public class AMPSMessageHandler implements MessageHandler {
     @Override
     public void invoke(Message message) {
         try {
-            queue.put(message.getData());
             if (!message.isCorrelationIdNull()) {
                 correlationIds.put(message.getCorrelationId());
             }
@@ -63,6 +62,7 @@ public class AMPSMessageHandler implements MessageHandler {
             if (!message.isTimestampNull()) {
                 timestamps.put(message.getTimestamp());
             }
+            queue.put(message.getData());
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }

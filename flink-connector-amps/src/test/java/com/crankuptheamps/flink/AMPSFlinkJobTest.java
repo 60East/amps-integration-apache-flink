@@ -154,11 +154,11 @@ public class AMPSFlinkJobTest {
 
         @Nested
         public class BasicSourceSinkTest {
-            private static LinkedBlockingQueue<String> values;
+            private static final LinkedBlockingQueue<String> values = new LinkedBlockingQueue<>(100);
             
             @BeforeEach
             public void resetValues() {
-                values = new LinkedBlockingQueue<>(100);
+                values.clear();
             }
 
             @Test
@@ -442,11 +442,11 @@ public class AMPSFlinkJobTest {
 
         @Nested
         public class BookmarkSubJobTest {
-            private static LinkedBlockingQueue<String> values;
+            private static final LinkedBlockingQueue<String> values = new LinkedBlockingQueue<>(100);
             
             @BeforeEach
             public void resetValues() {
-                values = new LinkedBlockingQueue<>(100);
+                values.clear();
             }
             
             @Test
@@ -649,11 +649,11 @@ public class AMPSFlinkJobTest {
 
         @Nested
         public class SOWJobTest {
-            private static LinkedBlockingQueue<String> values;
+            private static final LinkedBlockingQueue<String> values = new LinkedBlockingQueue<>(100);
             
             @BeforeEach
             public void resetValues() {
-                values = new LinkedBlockingQueue<>(100);
+                values.clear();
             }
 
             @Test
@@ -780,9 +780,16 @@ public class AMPSFlinkJobTest {
 
                     env.fromSource(source, WatermarkStrategy.noWatermarks(), topic)
                         .process(new ProcessFunction<String, String>() {
+                            int localReceived = 0;
                             @Override
                             public void processElement(String value, ProcessFunction<String, String>.Context ctx, org.apache.flink.util.Collector<String> output) throws Exception {
-                                 values.offer(value);
+                                // We only need to check that there are messagesToReceive messages
+                                // in the queue since that will prove that sowAndSubscribe
+                                // properly subscribes.
+                                if (localReceived < messagesToReceive) {
+                                    values.offer(value);
+                                    localReceived++;
+                                }
                             }
                         });
 
@@ -807,13 +814,13 @@ public class AMPSFlinkJobTest {
 
         @Nested
         public class ParallelismJobTest {
-            private static LinkedBlockingQueue<String> values;
-            private static LinkedBlockingQueue<String> values2;
+            private static final LinkedBlockingQueue<String> values = new LinkedBlockingQueue<>(100);
+            private static final LinkedBlockingQueue<String> values2 = new LinkedBlockingQueue<>(100);
             
             @BeforeEach
             public void resetValues() {
-                values = new LinkedBlockingQueue<>(100);
-                values2 = new LinkedBlockingQueue<>(100);
+                values.clear();
+                values2.clear();
             }
 
             @Test
@@ -998,11 +1005,11 @@ public class AMPSFlinkJobTest {
 
         @Nested
         public class QueueJobTest {
-            private static LinkedBlockingQueue<String> values;
+            private static final LinkedBlockingQueue<String> values = new LinkedBlockingQueue<>(100);
             
             @BeforeEach
             public void resetValues() {
-                values = new LinkedBlockingQueue<>(100);
+                values.clear();
             }
 
             @Test
@@ -1138,4 +1145,3 @@ public class AMPSFlinkJobTest {
         return "d" + System.currentTimeMillis();
     }
 }
-
