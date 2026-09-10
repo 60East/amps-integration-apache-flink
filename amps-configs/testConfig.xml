@@ -57,9 +57,9 @@
         
         <Target>
             <Protocol>file</Protocol>
-            <Level>info</Level>
+            <Level>trace</Level>
             <FileName>./amps-files/connector-tests/logs/connector_tests.log</FileName>
-            <RotationThreshold>10MB</RotationThreshold>
+            <RotationThreshold>50MB</RotationThreshold>
         </Target>
     </Logging>
 

@@ -92,7 +92,7 @@ under the License.
         <failIfNoTests>false</failIfNoTests>
         <skipJavadocs>true</skipJavadocs>
         <skipTests>true</skipTests>
-        <testLoggingLevel>DEBUG</testLoggingLevel>
+        <testLoggingLevel>TRACE</testLoggingLevel>
         <rerunFailingTestsCount>0</rerunFailingTestsCount>
         <mainClass>SimpleExample</mainClass>
     </properties>
