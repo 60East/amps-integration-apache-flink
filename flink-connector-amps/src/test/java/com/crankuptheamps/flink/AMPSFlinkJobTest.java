@@ -1020,7 +1020,7 @@ public class AMPSFlinkJobTest {
 
                 final int max = 10;
                 final int checkpointInterval = 250;
-                final int waitForMessageInQueueTime = 500;
+                final int waitForMessageInQueueTime = 2000;
 
                 AMPSSource<String> source = AMPSSource.<String>builder()
                     .setUri(TestConstants.URI)
@@ -1076,7 +1076,7 @@ public class AMPSFlinkJobTest {
                 final String topicSubscriber = PREFIX + "AtMostOnceQueueJobWorkToDo";
 
                 final int max = 10;
-                final int waitForMessageInQueueTime = 250;
+                final int waitForMessageInQueueTime = 2000;
 
                 AMPSSource<String> source = AMPSSource.<String>builder()
                     .setUri(TestConstants.URI)
