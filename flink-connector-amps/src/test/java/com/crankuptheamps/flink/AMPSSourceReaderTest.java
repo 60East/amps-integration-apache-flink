@@ -220,18 +220,15 @@ public class AMPSSourceReaderTest {
                     pub.connect(TestConstants.URI);
                     pub.logon();
 
-                    long before = System.currentTimeMillis();
-                    
+                    long before = System.nanoTime();
                     pub.publish(topic, "1");
-
                     waitForSpecifiedInput(reader, output, 1);
-                    reader.pollNext(output);
-
-                    long after = System.currentTimeMillis();
+                    long after = System.nanoTime() - before;
 
                     assertEquals(1, output.getRecords().size(), "Should have one record");
                     // Allow the duration to be somewhat off
-                    assertTrue(after - before >= sleepDuration / 3, "Should have slept a short duration");
+                    assertTrue(after >= TimeUnit.MILLISECONDS.toNanos(sleepDuration) * 0.7,
+                        "Should have slept a short duration");
                 }
             }
 
