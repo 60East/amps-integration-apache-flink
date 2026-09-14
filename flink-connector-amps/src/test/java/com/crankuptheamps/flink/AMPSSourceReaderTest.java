@@ -1741,6 +1741,7 @@ public class AMPSSourceReaderTest {
 
     @Nested
     public class MessageQueue {
+        private static final int FLUSH_TIMEOUT = 1000;
 
         @Test
         @Timeout(value = TestConstants.SHORT_TIMEOUT, unit = TimeUnit.SECONDS)
@@ -1766,11 +1767,12 @@ public class AMPSSourceReaderTest {
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
-                reader.start();
-                reader.addSplits(splits);
-
                 pub.publish(pubTopic, "1");
                 pub.publish(pubTopic, "2");
+                pub.publishFlush(FLUSH_TIMEOUT);
+
+                reader.start();
+                reader.addSplits(splits);
 
                 waitForSpecifiedInput(reader, output, 1);
                 assertEquals(1, output.getRecords().size(), "Should have one message before acking");
@@ -1810,11 +1812,12 @@ public class AMPSSourceReaderTest {
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
-                reader.start();
-                reader.addSplits(splits);
-
                 pub.publish(pubTopic, "1");
                 pub.publish(pubTopic, "2");
+                pub.publishFlush(FLUSH_TIMEOUT);
+
+                reader.start();
+                reader.addSplits(splits);
 
                 waitForSpecifiedInput(reader, output, 1);
                 assertEquals(1, output.getRecords().size(), "Should have first message from queue");
@@ -1861,11 +1864,12 @@ public class AMPSSourceReaderTest {
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
-                reader.start();
-                reader.addSplits(splits);
-
                 pub.publish(pubTopic, "1");
                 pub.publish(pubTopic, "2");
+                pub.publishFlush(FLUSH_TIMEOUT);
+
+                reader.start();
+                reader.addSplits(splits);
 
                 waitForSpecifiedInput(reader, output, 2);
                 assertEquals(2, output.getRecords().size(), "Should have both messages without acking from a Flink checkpoint");
@@ -1899,12 +1903,13 @@ public class AMPSSourceReaderTest {
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
-                reader.start();
-                reader.addSplits(splits);
-
                 for (int i = 0; i < maxBacklog; i++) {
                     pub.publish(pubTopic, "m");
                 }
+                pub.publishFlush(FLUSH_TIMEOUT);
+
+                reader.start();
+                reader.addSplits(splits);
 
                 waitForSpecifiedInput(reader, output, maxBacklog);
                 assertEquals(maxBacklog, output.getRecords().size(), "Should have maxBacklog messages");
@@ -1942,12 +1947,13 @@ public class AMPSSourceReaderTest {
                 pub.connect(TestConstants.URI);
                 pub.logon();
 
-                reader.start();
-                reader.addSplits(splits);
-
                 for (int i = 0; i < maxBacklog; i++) {
                     pub.publish(pubTopic, "m");
                 }
+                pub.publishFlush(FLUSH_TIMEOUT);
+
+                reader.start();
+                reader.addSplits(splits);
 
                 waitForSpecifiedInput(reader, output, maxBacklog);
                 assertEquals(maxBacklog, output.getRecords().size(), "Should have maxBacklog messages");
