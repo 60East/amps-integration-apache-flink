@@ -67,8 +67,8 @@ under the License.
         <!-- Dependency Versions -->
         <amps.client.version>5.3.5.5</amps.client.version>
         <java.version>17</java.version>
-        <flink.major.minor>2.3</flink.major.minor>
-        <flink.patch>0</flink.patch>
+        <flink.version>2.3.0</flink.version>
+        <flink.docs.version>2.3</flink.docs.version>
         <slfj4.version>2.0.17</slfj4.version>
         <slfj4.simple.version>2.0.9</slfj4.simple.version>
         <junit.version>6.0.3</junit.version>
@@ -76,7 +76,6 @@ under the License.
         <!-- Flink Connector Parent Properties -->
         <flink.forkCountUnitTest>1</flink.forkCountUnitTest>
         <flink.forkCountITCase>1</flink.forkCountITCase>
-        <flink.version>${flink.major.minor}.${flink.patch}</flink.version>
         <flink.parent.artifactId>flink-connector-amps-parent</flink.parent.artifactId>
         <japicmp.referenceVersion/> <!-- The old version for the binary compatibility checker japicmp-maven-plugin -->
         <japicmp.skip>true</japicmp.skip>
@@ -285,7 +284,7 @@ under the License.
                         <doclint>none</doclint>
                         <links>
                             <link>https://devnull.crankuptheamps.com/documentation/api/java/${amps.client.version}/</link>
-                            <link>https://nightlies.apache.org/flink/flink-docs-release-${flink.major.minor}/api/java/</link>
+                            <link>https://nightlies.apache.org/flink/flink-docs-release-${flink.docs.version}/api/java/</link>
                         </links>
                         <skip>${skipJavadocs}</skip>
                     </configuration>
