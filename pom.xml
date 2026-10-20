@@ -69,7 +69,7 @@ under the License.
         <java.version>17</java.version>
         <flink.version>2.3.0</flink.version>
         <flink.docs.version>2.3</flink.docs.version>
-        <slfj4.version>2.0.17</slfj4.version>
+        <slfj4.version>2.0.20</slfj4.version>
         <slfj4.simple.version>2.0.9</slfj4.simple.version>
         <junit.version>6.0.3</junit.version>
 
