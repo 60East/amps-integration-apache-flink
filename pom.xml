@@ -83,7 +83,7 @@ under the License.
         <!-- Maven Plugin Versions -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven.jacoco.version>0.8.14</maven.jacoco.version>
+        <maven.jacoco.version>0.8.15</maven.jacoco.version>
         <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
         <central-publishing-maven-plugin.version>0.8.0</central-publishing-maven-plugin.version>
 
