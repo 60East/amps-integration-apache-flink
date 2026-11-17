@@ -306,7 +306,7 @@ public class AMPSSourceReader<OUT> extends SingleThreadMultiplexSourceReaderBase
 
                 if (completedMessages == null) continue;
         
-                int bookmarksToDiscard = 0;
+                long bookmarksToDiscard = 0;
                 for (AMPSMessage message : completedMessages) {
                     long discardSeqNo = bookmarkStore.getOldestBookmarkSeq(message.getSubIdRaw());
                     long mostRecentSeqNo = message.getBookmarkSeqNo();
