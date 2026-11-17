@@ -274,7 +274,7 @@ The following are required to construct a valid AMPSSink:
 - `.setSerializationSchema(SerializationSchema)` or `.setSerializationSchema(AMPSSerializationSchema)`
     - Sets the serializer that clients will use to serialize data to AMPS.
     - When using a **SerializationSchema**, only the schema will be used to serialize the input elements.
-    - When using an **AMPSSerializationSchema**, more control over element serialization is provided such as specifying a correlation ID for each message published to AMPS and selecting a topic based on the input element.
+    - When using an **AMPSSerializationSchema**, more control over element serialization is provided such as specifying a correlation ID for each message published to AMPS, selecting a topic based on the input element, and selecting which publish command to use for any individual message.
 
 - `.build()`
     - Returns the constructed AMPSSink.
@@ -297,6 +297,7 @@ The following are optional for functionality related to the AMPS client:
         - "sow_delete" (Performs a SOW delete by data)
     - The following commands are valid but may require custom serialization schemas:
         - "delta_publish"
+    - **Note**: The publish command provided by an **AMPSSerializationSchema** will override the publish command provided here. If there is no publish command provided by the schema, then this value will be used.
 
 - `.setFailedWriteHandlerSupplier(Supplier<FailedWriteHandler>)`
     - Sets the supplier that gets each client a **FailedWriteHandler**.

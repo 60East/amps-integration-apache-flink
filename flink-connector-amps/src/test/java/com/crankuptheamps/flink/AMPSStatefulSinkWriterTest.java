@@ -1113,7 +1113,86 @@ public class AMPSStatefulSinkWriterTest {
 
     @Nested
     public class SerializationSchema {
-        
+
+        @Test
+        @Timeout(value = TestConstants.LONG_TIMEOUT, unit = TimeUnit.SECONDS)
+        public void testSetPublishCommandInSerializationSchema() throws Exception {
+            String topic = "testSetPublishCommandInSerializationSchema";
+            String initMessage = "{\"id\":1,\"num\":1,\"data\":\"test\"}";
+            String deltaMessage = "{\"id\":1,\"num\":2}";
+
+            AMPSSink<String> sink = AMPSSink.<String>builder()
+                .setUri(TestConstants.URI)
+                .setTopic(topic)
+                .setClientName(topic)
+                .setSerializationSchema(new AMPSSerializationSchema<>() {
+                    private int counter = 0;
+
+                    @Override
+                    public SerializedElement serialize(String element, SinkWriter.Context context) {
+                        SerializedElement se = new SerializedElement();
+                        switch (counter) {
+                            case 0:
+                                se.setData(TestConstants.getStringSchema().serialize(element));
+                                se.setPublishCommand(SerializedElement.PublishCommand.Publish);
+                                break;
+                            case 1:
+                                se.setData(TestConstants.getStringSchema().serialize(element));
+                                se.setPublishCommand(SerializedElement.PublishCommand.DeltaPublish);
+                                break;
+                            case 2:
+                                se.setPublishCommand(SerializedElement.PublishCommand.SowDelete);
+                                se.setSowKey(element);
+                                break;
+                            default:
+                                throw new UnsupportedOperationException("Cannot publish more than 3 messages");
+                        }
+                        counter++;
+                        return se;
+                    }
+                })
+                .build();
+
+            try (Client sub = new Client(topic + "-sub");
+                    SinkWriter<String> writer = sink.createWriter(new AMPSWriterInitContext());) {
+                sub.connect(TestConstants.URI);
+                sub.logon();
+                TestConstants.sowDelete(sub, topic);
+
+                AMPSMessageHandler mh = new AMPSMessageHandler();
+                sub.sowAndDeltaSubscribe(mh, topic, 5_000);
+                assertEquals("", mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should have polled group begin from empty topic.");
+                assertEquals("", mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should have polled group end from empty topic.");
+                assertNull(mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS / 5, TimeUnit.MILLISECONDS),
+                    "Should have polled null with no messages in the sow.");
+
+                writer.write(initMessage, new WriterContext());
+                writer.flush(false);
+                assertEquals(initMessage, mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should have polled the initially published message.");
+
+                writer.write(deltaMessage, new WriterContext());
+                writer.flush(false);
+                assertEquals(deltaMessage, mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should have polled the delta message.");
+
+                sub.unsubscribe();
+
+                writer.write(mh.sowKeys.poll(), new WriterContext());
+                writer.flush(false);
+
+                sub.sow(mh, topic, 5_000);
+                assertEquals("", mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should have polled group begin after sow delete.");
+                assertEquals("", mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+                    "Should have polled group end after sow delete.");
+                assertNull(mh.queue.poll(MH_QUEUE_POLL_TIMEOUT_MS / 5, TimeUnit.MILLISECONDS),
+                    "Should have polled null after sow delete with no messages in the sow.");
+            }
+        }
+
         @Test
         @Timeout(value = TestConstants.SHORT_TIMEOUT, unit = TimeUnit.SECONDS)
         public void testSetTopicInSerializationSchema() throws Exception {
@@ -1146,7 +1225,7 @@ public class AMPSStatefulSinkWriterTest {
                     "Should have polled null message from builder method topic.");
             }
         }
-        
+
         @Test
         @Timeout(value = TestConstants.SHORT_TIMEOUT, unit = TimeUnit.SECONDS)
         public void testSetCorrelationIdInSerializationSchema() throws Exception {
@@ -1181,7 +1260,7 @@ public class AMPSStatefulSinkWriterTest {
                 assertEquals(messages.size(), mh.correlationIds.size(), "Should have received all correlation IDs.");
             }
         }
-        
+
         @Test
         @Timeout(value = TestConstants.SHORT_TIMEOUT, unit = TimeUnit.SECONDS)
         public void testSetCorrelationIdInSerializationSchemaOverridesBuilder() throws Exception {

@@ -25,6 +25,9 @@
 
 package com.crankuptheamps.flink.util;
 
+import com.crankuptheamps.client.Message;
+import com.crankuptheamps.flink.sink.AMPSSink;
+
 import org.apache.flink.annotation.PublicEvolving;
 
 /**
@@ -42,11 +45,39 @@ public class SerializedElement {
     private String sowKey;
     /** The topic, if any, that will be used when publishing to AMPS. If null, use topic set by setTopic in the AMPSSink builder. */
     private String topic;
+    /** The command, if any, that will be used when publishing to AMPS. If null, use the command set by setPublishCommand in the AMPSSink builder.*/
+    private PublishCommand publishCommand;
 
     public SerializedElement() {}
 
     public SerializedElement(byte[] data) {
         this.data = data;
+    }
+
+    /**
+     * An enum used for determining what command a SerializedElement should be published with
+     * when it is passed to an {@link AMPSSink}.
+     *
+     * Each enum relates to the publish command set by the
+     * {@link AMPSSink.AMPSSinkBuilder#setPublishCommand(String)}.
+     */
+    public static enum PublishCommand {
+        /** Equivalent to using "publish" as the publish command. */
+        Publish(Message.Command.Publish),
+        /** Equivalent to using "delta_publish" as the publish command. */
+        DeltaPublish(Message.Command.DeltaPublish),
+        /** Equivalent to using "sow_delete" as the publish command. */
+        SowDelete(Message.Command.SOWDelete);
+
+        private final int command;
+
+        private PublishCommand(int command) {
+            this.command = command;
+        }
+
+        private int getCommand() {
+            return command;
+        }
     }
 
     /**
@@ -171,6 +202,41 @@ public class SerializedElement {
      */
     public boolean isTopicNull() {
         return topic == null;
+    }
+
+    /**
+     * Returns the command used for publishing the SerializedElement.
+     *
+     * Used internally to set the command in an {@link AMPSSink}.
+     *
+     * @return The int value of the command to use.
+     */
+    public int getPublishCommand() {
+        return publishCommand.getCommand();
+    }
+
+    /**
+     * Sets the command used for publishing the SerializedElement.
+     *
+     * This will override the publish command set by the {@link AMPSSink.AMPSSinkBuilder#setPublishCommand(String)}.
+     * Only {@link PublishCommand#Publish Publish}, {@link PublishCommand#DeltaPublish DeltaPublish}, and
+     * {@link PublishCommand#SowDelete SowDelete} are supported.
+     *
+     * @param publishCommand The publish command.
+     */
+    public void setPublishCommand(PublishCommand publishCommand) {
+        this.publishCommand = publishCommand;
+    }
+
+    /**
+     * Returns if the command is null.
+     *
+     * Used internally to determine if the command should be set using the SerializedElement's command.
+     * 
+     * @return If the command is null.
+     */
+    public boolean isPublishCommandNull() {
+        return publishCommand == null;
     }
 }
 

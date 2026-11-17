@@ -385,6 +385,13 @@
             <SlabSize>1MB</SlabSize>
         </Topic>
         <Topic>
+            <Name>testSetPublishCommandInSerializationSchema</Name>
+            <MessageType>json</MessageType>
+            <FileName>./amps-files/connector-tests/sow/%n.sow</FileName>
+            <Key>/id</Key>
+            <SlabSize>1MB</SlabSize>
+        </Topic>
+        <Topic>
 	        <Name>testSOWBatchSize</Name>
 	        <MessageType>json</MessageType>
 	        <FileName>./amps-files/connector-tests/sow/%n.sow</FileName>

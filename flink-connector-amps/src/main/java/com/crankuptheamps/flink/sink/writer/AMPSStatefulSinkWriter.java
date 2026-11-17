@@ -472,12 +472,28 @@ public class AMPSStatefulSinkWriter<IN> implements StatefulSinkWriter<IN, AMPSWr
      */
     protected void sendMessage(SerializedElement message) throws IOException {
         try {
-            command.reset(commandType);
-
-            if (!message.isTopicNull()) {
-                command.setTopic(message.getTopic());
+            if (message.isPublishCommandNull()) {
+                command.reset(commandType);
             } else {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Overriding '{}' command for '{}' with SerializedElement Message.Command {}",
+                            publishCommand,
+                            clientName,
+                            message.getPublishCommand());
+                }
+                command.reset(message.getPublishCommand());
+            }
+
+            if (message.isTopicNull()) {
                 command.setTopic(topicBytes, 0, topicBytes.length);
+            } else {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Overriding topic '{}' for '{}' with SerializedElement topic '{}'",
+                            topic,
+                            clientName,
+                            message.getTopic());
+                }
+                command.setTopic(message.getTopic());
             }
 
             if (!message.isDataNull()) {
@@ -491,6 +507,11 @@ public class AMPSStatefulSinkWriter<IN> implements StatefulSinkWriter<IN, AMPSWr
             }
 
             if (!message.isCorrelationIdNull()) {
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Using SerializedElement correlation Id for '{}' with value '{}'",
+                            clientName,
+                            message.getCorrelationId());
+                }
                 command.setCorrelationId(message.getCorrelationId());
             } else if (correlationId != null) {
                 command.setCorrelationId(correlationId);
