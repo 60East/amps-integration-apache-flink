@@ -79,11 +79,17 @@ public class SubscriberRunnable implements Runnable {
             if (mh == null) {
                 try (MessageStream ms = client.execute(cmd)) {
                     for (Message m : ms) {
-                        if (m != null) {
-                          System.out.println(m.getData());
-                          if (!m.isCorrelationIdNull()) {
-                              System.out.println("CorrelationId: " + m.getCorrelationId());
-                          }
+                        // The stream returns null when its blocking read is interrupted.
+                        if (m == null) {
+                            break;
+                        }
+                        String data = m.getData();
+                        if (m.getCommand() == Message.Command.OOF) {
+                            data = "OOF (" + m.getReasonText() + ") " + data;
+                        }
+                        System.out.println(data);
+                        if (!m.isCorrelationIdNull()) {
+                            System.out.println("CorrelationId: " + m.getCorrelationId());
                         }
                     }
                 }
