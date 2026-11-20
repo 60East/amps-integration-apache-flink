@@ -311,6 +311,7 @@ under the License.
                         <excludes>
                             <exclude>**/*.md</exclude>
                             <exclude>**/*.xml</exclude>
+                            <exclude>**/*.yml</exclude>
                             <exclude>**/target/**</exclude>
                             <exclude>**/amps-files/**</exclude>
                             <exclude>**/amps-configs/**</exclude>
